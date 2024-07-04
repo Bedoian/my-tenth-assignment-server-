@@ -1,8 +1,8 @@
-const express=require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const express = require('express');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const cors = require('cors');
-const app=express();
+const app = express();
 const port = process.env.PORT || 5000;
 
 
@@ -26,15 +26,30 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    const spotCollection =  client.db("spotDB").collection("spot")
+    const spotCollection = client.db("spotDB").collection("spot")
+    // post spot
+    app.post('/spot', async (req, res) => {
+      const newSpot = req.body
+      const result = await spotCollection.insertOne(newSpot)
+      res.send(result)
+    })
 
-    app.post('/spot',async(req,res)=>{
-        const newSpot=req.body
-       const result=await spotCollection.insertOne(newSpot)
-       res.send(result)
+    // get item
+    app.get('/spot',async(req,res)=>{
+      const cursor=spotCollection.find()
+      const result=await cursor.toArray()
+      res.send(result)
+    })
+
+    // get item using id
+    app.get('/spot/:id',async(req,res)=>{
+      const id=req.params.id;
+      const query={_id:new ObjectId(id)}
+      const result=await spotCollection.findOne(query)
+      res.send(result)
     })
     // Send a ping to confirm a successful connection
- 
+
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
@@ -45,10 +60,10 @@ run().catch(console.dir);
 
 
 
-app.get('/',(req,res)=>{
-    res.send('my-tenth-assignment server is running')
+app.get('/', (req, res) => {
+  res.send('my-tenth-assignment server is running')
 })
 
-app.listen(port,()=>{
-    console.log(`my server is running on: ${port}`)
+app.listen(port, () => {
+  console.log(`my server is running on: ${port}`)
 })
