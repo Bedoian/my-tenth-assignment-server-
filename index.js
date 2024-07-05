@@ -51,7 +51,8 @@ async function run() {
 
     // get item using email
     app.get('/myList/:email', async (req, res) => {
-      const result = await spotCollection.find({ email: req.params.email }).toArray();
+      const sortPattern={cost:1}
+      const result = await spotCollection.find({ email: req.params.email }).sort(sortPattern).toArray();
       res.send(result)
     })
 
