@@ -35,24 +35,53 @@ async function run() {
     })
 
     // get item
-    app.get('/spot',async(req,res)=>{
-      const cursor=spotCollection.find()
-      const result=await cursor.toArray()
+    app.get('/spot', async (req, res) => {
+      const cursor = spotCollection.find()
+      const result = await cursor.toArray()
       res.send(result)
     })
 
     // get item using id
-    app.get('/spot/:id',async(req,res)=>{
-      const id=req.params.id;
-      const query={_id:new ObjectId(id)}
-      const result=await spotCollection.findOne(query)
+    app.get('/spot/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await spotCollection.findOne(query)
       res.send(result)
     })
 
     // get item using email
-    app.get('/spot/:email',async(req,res)=>{
-      const email=req.params.email;
-      const result=await spotCollection.find(email).toArray();
+    app.get('/myList/:email', async (req, res) => {
+      const result = await spotCollection.find({ email: req.params.email }).toArray();
+      res.send(result)
+    })
+
+    app.delete('/spot/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await spotCollection.deleteOne(query)
+      res.send(result)
+    })
+
+    app.put('/spot/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const updatedSpot = req.body;
+
+      const spot = {
+        $set: {
+          name: updatedSpot.name,
+          country: updatedSpot.country,
+          location: updatedSpot.location,
+          photo: updatedSpot.photo,
+          cost: updatedSpot.cost,
+          Ttime: updatedSpot.Ttime,
+          visitor: updatedSpot.visitor,
+          discription: updatedSpot.discription,
+          season: updatedSpot.season
+        }
+      }
+      const result= await spotCollection.updateOne(filter,spot,options)
       res.send(result)
     })
     // Send a ping to confirm a successful connection
