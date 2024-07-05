@@ -81,8 +81,7 @@ async function run() {
           season: updatedSpot.season
         }
       }
-      const result= await spotCollection.updateOne(filter,spot,options)
-      res.send(result)
+
     })
     // Send a ping to confirm a successful connection
 
