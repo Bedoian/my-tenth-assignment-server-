@@ -48,6 +48,13 @@ async function run() {
       const result=await spotCollection.findOne(query)
       res.send(result)
     })
+
+    // get item using email
+    app.get('/spot/:email',async(req,res)=>{
+      const email=req.params.email;
+      const result=await spotCollection.find(email).toArray();
+      res.send(result)
+    })
     // Send a ping to confirm a successful connection
 
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
