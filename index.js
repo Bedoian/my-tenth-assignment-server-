@@ -27,6 +27,7 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     const spotCollection = client.db("spotDB").collection("spot")
+    const countryCollection = client.db("countryDB").collection("country")
     // post spot
     app.post('/spot', async (req, res) => {
       const newSpot = req.body
@@ -36,7 +37,8 @@ async function run() {
 
     // get item
     app.get('/spot', async (req, res) => {
-      const cursor = spotCollection.find()
+      const sortPattern={cost:1}
+      const cursor = spotCollection.find().sort(sortPattern)
       const result = await cursor.toArray()
       res.send(result)
     })
@@ -51,8 +53,8 @@ async function run() {
 
     // get item using email
     app.get('/myList/:email', async (req, res) => {
-      const sortPattern={cost:1}
-      const result = await spotCollection.find({ email: req.params.email }).sort(sortPattern).toArray();
+    
+      const result = await spotCollection.find({ email: req.params.email }).toArray();
       res.send(result)
     })
 
@@ -83,6 +85,27 @@ async function run() {
         }
       }
       const result= await spotCollection.updateOne(filter,spot,options)
+      res.send(result)
+    })
+
+    // country section
+
+    app.post('/country',async(req,res)=>{
+      const newCountry=req.body;
+      const result= await countryCollection.insertOne(newCountry);
+      res.send(result)
+    })
+
+    app.get('/country',async(req,res)=>{
+      const cursor=countryCollection.find()
+      const result=await cursor.toArray()
+      res.send(result)
+    })
+
+    app.get('/country/:id',async(req,res)=>{
+      const id=req.params.id;
+      const query={_id:new ObjectId(id)}
+      const result=await countryCollection.findOne(query)
       res.send(result)
     })
     // Send a ping to confirm a successful connection
